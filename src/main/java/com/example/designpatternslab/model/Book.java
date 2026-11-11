@@ -5,9 +5,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Transient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-public class Book implements Element {
+public class Book extends Element {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,18 +20,24 @@ public class Book implements Element {
     private String title;
     private String author;
 
-    // Constructor fara parametri, necesar pentru JPA
+    @Transient
+    private List<Author> authors = new ArrayList<>();
+
+    @Transient
+    private List<Element> contents = new ArrayList<>();
+
     public Book() {
     }
 
-    // Constructor cu parametri
+    public Book(String title) {
+        this.title = title;
+    }
+
     public Book(Long id, String title, String author) {
         this.id = id;
         this.title = title;
         this.author = author;
     }
-
-    // Getters si Setters
 
     public Long getId() {
         return id;
@@ -53,30 +63,74 @@ public class Book implements Element {
         this.author = author;
     }
 
-    // Metoda pentru design pattern-ul Composite
+    public void addAuthor(Author author) {
+        authors.add(author);
+    }
+
+    public void addContent(Element element) {
+        add(element);
+    }
+
     @Override
     public void print() {
-        System.out.println("Book: " + title + " by " + author);
+        System.out.println("Book: " + title);
+
+        for (Author a : authors) {
+            a.print();
+        }
+
+        for (Element element : contents) {
+            element.print();
+        }
     }
 
     @Override
     public void add(Element element) {
-        throw new UnsupportedOperationException(
-                "Cannot add elements to a Book"
-        );
+
+        if (element == null) {
+            throw new IllegalArgumentException(
+                    "Nu poti adauga un element null."
+            );
+        }
+
+        if (element.getParent() != null) {
+            throw new IllegalStateException(
+                    "Elementul apartine deja unei sectiuni sau carti!"
+            );
+        }
+
+        if (element == this) {
+            throw new IllegalArgumentException(
+                    "O carte nu se poate contine pe ea insasi!"
+            );
+        }
+
+        // Evitam ciclurile intre elemente
+        Element current = this;
+
+        while (current != null) {
+            if (current == element) {
+                throw new IllegalArgumentException(
+                        "Nu poti crea un ciclu intre elemente!"
+                );
+            }
+
+            current = current.getParent();
+        }
+
+        contents.add(element);
+        element.setParent(this);
     }
 
     @Override
     public void remove(Element element) {
-        throw new UnsupportedOperationException(
-                "Cannot remove elements from a Book"
-        );
+        if (contents.remove(element)) {
+            element.setParent(null);
+        }
     }
 
     @Override
     public Element get(int index) {
-        throw new UnsupportedOperationException(
-                "Cannot get elements from a Book"
-        );
+        return contents.get(index);
     }
 }

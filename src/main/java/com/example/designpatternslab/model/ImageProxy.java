@@ -1,7 +1,7 @@
 
 package com.example.designpatternslab.model;
 
-public class ImageProxy implements Element {
+public class ImageProxy extends Element {
 
     private String imageName;
     private Image realImage;
@@ -17,26 +17,5 @@ public class ImageProxy implements Element {
         }
 
         realImage.print();
-    }
-
-    @Override
-    public void add(Element element) {
-        throw new UnsupportedOperationException(
-                "Cannot add elements to an ImageProxy"
-        );
-    }
-
-    @Override
-    public void remove(Element element) {
-        throw new UnsupportedOperationException(
-                "Cannot remove elements from an ImageProxy"
-        );
-    }
-
-    @Override
-    public Element get(int index) {
-        throw new UnsupportedOperationException(
-                "Cannot get elements from an ImageProxy"
-        );
     }
 }

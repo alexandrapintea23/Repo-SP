@@ -1,13 +1,35 @@
 
 package com.example.designpatternslab.model;
 
-public interface Element {
+public abstract class Element {
 
-    void print();
+    private Element parent;
 
-    void add(Element element);
+    public Element getParent() {
+        return parent;
+    }
 
-    void remove(Element element);
+    public void setParent(Element parent) {
+        this.parent = parent;
+    }
 
-    Element get(int index);
+    public abstract void print();
+
+    public void add(Element element) {
+        throw new UnsupportedOperationException(
+                "Acest element nu poate contine alte elemente."
+        );
+    }
+
+    public void remove(Element element) {
+        throw new UnsupportedOperationException(
+                "Acest element nu poate contine alte elemente."
+        );
+    }
+
+    public Element get(int index) {
+        throw new UnsupportedOperationException(
+                "Acest element nu poate contine alte elemente."
+        );
+    }
 }
