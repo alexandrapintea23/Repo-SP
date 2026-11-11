@@ -1,6 +1,7 @@
 
 package com.example.designpatternslab.model;
 
+import com.example.designpatternslab.visitor.Visitor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +14,26 @@ public class Section extends Element {
         this.title = title;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     @Override
     public void print() {
         System.out.println(title);
 
         for (Element element : elements) {
             element.print();
+        }
+    }
+
+    // LAB 3 - Visitor
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+
+        for (Element element : elements) {
+            element.accept(visitor);
         }
     }
 

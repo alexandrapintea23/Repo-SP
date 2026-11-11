@@ -1,6 +1,8 @@
 
 package com.example.designpatternslab.model;
 
+import com.example.designpatternslab.visitor.Visitor;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -81,6 +83,16 @@ public class Book extends Element {
 
         for (Element element : contents) {
             element.print();
+        }
+    }
+
+    // LAB 3 - Visitor
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+
+        for (Element element : contents) {
+            element.accept(visitor);
         }
     }
 

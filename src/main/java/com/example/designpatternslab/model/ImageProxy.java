@@ -1,6 +1,8 @@
 
 package com.example.designpatternslab.model;
 
+import com.example.designpatternslab.visitor.Visitor;
+
 public class ImageProxy extends Element {
 
     private String imageName;
@@ -10,12 +12,28 @@ public class ImageProxy extends Element {
         this.imageName = imageName;
     }
 
-    @Override
-    public void print() {
+    public String getImageName() {
+        return imageName;
+    }
+
+    // LAB 2 - Proxy: incarcare intarziata
+    public Image getRealImage() {
         if (realImage == null) {
             realImage = new Image(imageName);
         }
 
-        realImage.print();
+        return realImage;
+    }
+
+    // Pastram print() pentru testele vechi din LAB 2
+    @Override
+    public void print() {
+        getRealImage().print();
+    }
+
+    // LAB 3 - Visitor
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }

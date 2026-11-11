@@ -6,9 +6,15 @@ import com.example.designpatternslab.model.AlignLeft;
 import com.example.designpatternslab.model.AlignRight;
 import com.example.designpatternslab.model.Author;
 import com.example.designpatternslab.model.Book;
+import com.example.designpatternslab.model.Image;
 import com.example.designpatternslab.model.ImageProxy;
 import com.example.designpatternslab.model.Paragraph;
 import com.example.designpatternslab.model.Section;
+import com.example.designpatternslab.model.Table;
+
+import com.example.designpatternslab.visitor.BookStatistics;
+import com.example.designpatternslab.visitor.GenerateToC;
+import com.example.designpatternslab.visitor.RenderContentVisitor;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -147,7 +153,8 @@ public class DesignpatternslabApplication {
         Section aDouaSectiune = new Section("Sectiunea B");
 
         // Cream un singur paragraf
-        Paragraph paragrafComun = new Paragraph("Paragraf de test");
+        Paragraph paragrafComun =
+                new Paragraph("Paragraf de test");
 
         // Il adaugam in prima sectiune
         primaSectiune.add(paragrafComun);
@@ -231,11 +238,148 @@ public class DesignpatternslabApplication {
         strategySection.print();
 
         // =====================================
+        // LAB 3 - VISITOR
+        // =====================================
+
+        System.out.println("\n===== LAB 3 - VISITOR =====");
+
+        // Testam afisarea folosind RenderContentVisitor
+        System.out.println("\n===== RENDER CONTENT VISITOR =====");
+
+        Section renderSection =
+                new Section("Capitol pentru Visitor");
+
+        renderSection.add(
+                new Paragraph("Primul paragraf")
+        );
+
+        renderSection.add(
+                new Paragraph("Al doilea paragraf")
+        );
+
+        renderSection.add(
+                new Table("Tabel de exemplu")
+        );
+
+        // Folosim Visitor in loc de print()
+        RenderContentVisitor renderVisitor =
+                new RenderContentVisitor();
+
+        renderSection.accept(renderVisitor);
+
+        // =====================================
+        // LAB 3 - BOOK STATISTICS
+        // =====================================
+
+        System.out.println(
+                "\n===== LAB 3 - BOOK STATISTICS ====="
+        );
+
+        Section statisticsSection =
+                new Section("Capitolul 1");
+
+        // Adaugam 5 paragrafe
+        statisticsSection.add(
+                new Paragraph("Paragraph 1")
+        );
+
+        statisticsSection.add(
+                new Paragraph("Paragraph 2")
+        );
+
+        statisticsSection.add(
+                new Paragraph("Paragraph 3")
+        );
+
+        statisticsSection.add(
+                new Paragraph("Paragraph 4")
+        );
+
+        // Prima imagine - Proxy
+        statisticsSection.add(
+                new ImageProxy("ImageOne")
+        );
+
+        // A doua imagine - Image
+        statisticsSection.add(
+                new Image("ImageTwo")
+        );
+
+        // Al cincilea paragraf
+        statisticsSection.add(
+                new Paragraph("Some text")
+        );
+
+        // Adaugam un tabel
+        statisticsSection.add(
+                new Table("Table 1")
+        );
+
+        // Cream Visitor-ul pentru statistici
+        BookStatistics stats = new BookStatistics();
+
+        // Parcurgem sectiunea cu Visitor
+        statisticsSection.accept(stats);
+
+        // Afisam statisticile
+        stats.printStatistics();
+
+        // =====================================
+        // LAB 3 - GENERATE TABLE OF CONTENTS
+        // =====================================
+
+        System.out.println(
+                "\n===== LAB 3 - GENERATE TOC ====="
+        );
+
+        // Cream Visitor-ul care genereaza cuprinsul
+        GenerateToC tocVisitor = new GenerateToC();
+
+        // Generam cuprinsul pentru cartea din LAB 1
+        noapteBuna.accept(tocVisitor);
+
+        // =====================================
+        // LAB 3 - TEST VISITOR + PROXY
+        // =====================================
+
+        System.out.println(
+                "\n===== LAB 3 - VISITOR + PROXY ====="
+        );
+
+        // Cream un Proxy nou, fara sa incarcam imaginea reala
+        ImageProxy visitorImage =
+                new ImageProxy("Visitor Test Image");
+
+        // Prima afisare prin Visitor
+        long visitorStart = System.currentTimeMillis();
+
+        visitorImage.accept(new RenderContentVisitor());
+
+        long visitorEnd = System.currentTimeMillis();
+
+        System.out.println(
+                "Prima afisare prin Visitor: " +
+                        (visitorEnd - visitorStart) + " ms"
+        );
+
+        // A doua afisare prin Visitor
+        visitorStart = System.currentTimeMillis();
+
+        visitorImage.accept(new RenderContentVisitor());
+
+        visitorEnd = System.currentTimeMillis();
+
+        System.out.println(
+                "A doua afisare prin Visitor: " +
+                        (visitorEnd - visitorStart) + " ms"
+        );
+
+        // =====================================
         // FINAL
         // =====================================
 
         System.out.println(
-                "\n===== SFARSIT LAB 1, LAB 2 PROXY SI STRATEGY ====="
+                "\n===== SFARSIT LAB 1, LAB 2 SI LAB 3 ====="
         );
     }
 }
