@@ -1,0 +1,87 @@
+@startuml
+
+title LAB 4 - Partea 2: Chain of Responsibility si Command
+
+skinparam classAttributeIconSize 0
+
+interface BookCommand {
+    +execute(): String
+}
+
+class AddBookCommand {
+    -booksService: BooksService
+    -title: String
+    +execute(): String
+}
+
+class UpdateBookCommand {
+    -booksService: BooksService
+    -id: Long
+    -newTitle: String
+    +execute(): String
+}
+
+class DeleteBookCommand {
+    -booksService: BooksService
+    -id: Long
+    +execute(): String
+}
+
+class BookCommandExecutor {
+    +executeCommand(command: BookCommand): String
+}
+
+class AsyncCommandExecutor {
+    -executorService: ExecutorService
+    -commandStatuses: Map
+    +executeAsync(command: BookCommand): String
+    +getCommandStatus(id: String): String
+    +shutdown(): void
+}
+
+class BooksService {
+    -books: List
+    +getAllBooks(): List
+    +getBookById(id: Long): String
+    +addBook(title: String): String
+    +updateBook(id: Long, title: String): String
+    +deleteBook(id: Long): String
+}
+
+class BooksController {
+    +getAllBooks(): List
+    +getBookById(id: Long): String
+    +createBook(title: String): String
+    +createBookAsync(title: String): ResponseEntity
+    +updateBook(id: Long, title: String): String
+    +deleteBook(id: Long): String
+}
+
+class CommandStatusController {
+    +getCommandStatus(id: String): String
+}
+
+class RequestLoggingFilter {
+    +doFilterInternal(request, response, chain): void
+}
+
+AddBookCommand ..|> BookCommand
+UpdateBookCommand ..|> BookCommand
+DeleteBookCommand ..|> BookCommand
+
+AddBookCommand --> BooksService
+UpdateBookCommand --> BooksService
+DeleteBookCommand --> BooksService
+
+BookCommandExecutor --> BookCommand
+AsyncCommandExecutor --> BookCommand
+
+BooksController --> BooksService
+BooksController --> BookCommandExecutor
+BooksController --> AsyncCommandExecutor
+
+CommandStatusController --> AsyncCommandExecutor
+
+RequestLoggingFilter --> BooksController : HTTP request
+
+@enduml
