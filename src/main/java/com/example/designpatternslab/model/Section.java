@@ -2,13 +2,27 @@
 package com.example.designpatternslab.model;
 
 import com.example.designpatternslab.visitor.Visitor;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Section extends Element {
 
     private String title;
+
+    // LAB 5-6 - Relatie OneToMany intre Section si Element
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "SECTION_ID")
     private List<Element> elements = new ArrayList<>();
+
+    // Constructor necesar pentru JPA
+    public Section() {
+    }
 
     public Section(String title) {
         this.title = title;
@@ -58,7 +72,6 @@ public class Section extends Element {
             );
         }
 
-        // Impiedicam si ciclurile intre sectiuni
         Element current = this;
 
         while (current != null) {

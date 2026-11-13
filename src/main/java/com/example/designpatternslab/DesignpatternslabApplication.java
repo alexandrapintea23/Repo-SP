@@ -20,6 +20,10 @@ import com.example.designpatternslab.difexamples.ClientComponent;
 import com.example.designpatternslab.difexamples.SingletonComponent;
 import com.example.designpatternslab.difexamples.TransientComponent;
 
+import com.example.designpatternslab.repository.SectionRepository;
+import com.example.designpatternslab.repository.AuthorRepository;
+import com.example.designpatternslab.repository.BookRepository;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -280,10 +284,6 @@ public class DesignpatternslabApplication {
         // LAB 3 - TEST VISITOR + PROXY
         // =====================================
 
-        System.out.println(
-                "\n===== LAB 3 - VISITOR + PROXY ====="
-        );
-
         ImageProxy visitorImage =
                 new ImageProxy("Visitor Test Image");
 
@@ -392,6 +392,67 @@ public class DesignpatternslabApplication {
 
         System.out.println(
                 "\n===== SFARSIT LAB 4 - TEST DI ====="
+        );
+
+        // =====================================
+        // LAB 5-6 - TEST SPRING DATA JPA
+        // =====================================
+
+        System.out.println(
+                "\n===== LAB 5-6 - TEST JPA ====="
+        );
+
+        SectionRepository sectionRepository =
+                context.getBean(SectionRepository.class);
+
+        Section sectiuneJPA =
+                new Section("Sectiune salvata in H2");
+
+        sectiuneJPA.add(
+                new Paragraph("Paragraf salvat prin Spring Data JPA")
+        );
+
+        Section sectiuneSalvata =
+                sectionRepository.save(sectiuneJPA);
+
+        System.out.println(
+                "TEST JPA REUSIT! ID sectiune: " +
+                        sectiuneSalvata.getId()
+        );
+
+        // =====================================
+        // LAB 5-6 - TEST MANY TO MANY
+        // =====================================
+
+        System.out.println(
+                "\n===== LAB 5-6 - TEST MANY TO MANY ====="
+        );
+
+        AuthorRepository authorRepository =
+                context.getBean(AuthorRepository.class);
+
+        BookRepository bookRepository =
+                context.getBean(BookRepository.class);
+
+        Author autor1 = new Author("Autor Test 1");
+        Author autor2 = new Author("Autor Test 2");
+
+        // Salvam mai intai autorii in H2
+        authorRepository.save(autor1);
+        authorRepository.save(autor2);
+
+        // Cream o carte cu doi autori
+        Book carteJPA = new Book("Carte cu doi autori");
+
+        carteJPA.addAuthor(autor1);
+        carteJPA.addAuthor(autor2);
+
+        // Salvam cartea si asocierea ManyToMany
+        Book carteSalvata = bookRepository.save(carteJPA);
+
+        System.out.println(
+                "TEST MANY TO MANY REUSIT! ID carte: " +
+                        carteSalvata.getId()
         );
     }
 }

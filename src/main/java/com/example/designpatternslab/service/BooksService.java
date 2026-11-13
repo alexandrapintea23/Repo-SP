@@ -1,59 +1,68 @@
+
 package com.example.designpatternslab.service;
+
+import com.example.designpatternslab.model.Book;
+import com.example.designpatternslab.repository.BookRepository;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class BooksService {
 
-    private final List<String> books = new ArrayList<>();
+    private final BookRepository bookRepository;
 
-    public BooksService() {
-        books.add("Noapte buna, copii!");
-        books.add("Ion");
-        books.add("Morometii");
+    // Spring injecteaza automat repository-ul
+    public BooksService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
+    // LAB 4 + LAB 5-6: citim cartile din baza de date
     public List<String> getAllBooks() {
-        return books;
+        return bookRepository.findAll()
+                .stream()
+                .map(Book::getTitle)
+                .toList();
     }
 
+    // Cautam cartea dupa ID-ul real din baza de date
     public String getBookById(Long id) {
-        int index = id.intValue() - 1;
-
-        if (index < 0 || index >= books.size()) {
-            return "Cartea nu a fost gasita";
-        }
-
-        return books.get(index);
+        return bookRepository.findById(id)
+                .map(Book::getTitle)
+                .orElse("Cartea nu a fost gasita");
     }
 
+    // Salvam cartea in H2
     public String addBook(String title) {
-        books.add(title);
+        Book book = new Book(title);
+        bookRepository.save(book);
+
         return "Cartea '" + title + "' a fost adaugata cu succes";
     }
 
+    // Actualizam titlul cartii in H2
     public String updateBook(Long id, String newTitle) {
-        int index = id.intValue() - 1;
+        return bookRepository.findById(id)
+                .map(book -> {
+                    book.setTitle(newTitle);
+                    bookRepository.save(book);
 
-        if (index < 0 || index >= books.size()) {
-            return "Cartea nu a fost gasita";
-        }
-
-        books.set(index, newTitle);
-        return "Cartea cu ID-ul " + id + " a fost actualizata cu succes";
+                    return "Cartea cu ID-ul " + id
+                            + " a fost actualizata cu succes";
+                })
+                .orElse("Cartea nu a fost gasita");
     }
 
+    // Stergem cartea din H2
     public String deleteBook(Long id) {
-        int index = id.intValue() - 1;
-
-        if (index < 0 || index >= books.size()) {
+        if (!bookRepository.existsById(id)) {
             return "Cartea nu a fost gasita";
         }
 
-        books.remove(index);
+        bookRepository.deleteById(id);
+
         return "Cartea cu ID-ul " + id + " a fost stearsa cu succes";
     }
 }
+

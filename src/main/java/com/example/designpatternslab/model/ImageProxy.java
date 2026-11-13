@@ -2,11 +2,20 @@
 package com.example.designpatternslab.model;
 
 import com.example.designpatternslab.visitor.Visitor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 
+@Entity
 public class ImageProxy extends Element {
 
     private String imageName;
+
+    @Transient
     private Image realImage;
+
+    // Constructor necesar pentru JPA
+    public ImageProxy() {
+    }
 
     public ImageProxy(String imageName) {
         this.imageName = imageName;
@@ -25,7 +34,6 @@ public class ImageProxy extends Element {
         return realImage;
     }
 
-    // Pastram print() pentru testele vechi din LAB 2
     @Override
     public void print() {
         getRealImage().print();

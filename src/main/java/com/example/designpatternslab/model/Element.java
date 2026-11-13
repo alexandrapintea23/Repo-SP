@@ -2,10 +2,35 @@
 package com.example.designpatternslab.model;
 
 import com.example.designpatternslab.visitor.Visitor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Transient;
 
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Element {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Transient
     private Element parent;
+
+    public Element() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Element getParent() {
         return parent;
@@ -15,7 +40,7 @@ public abstract class Element {
         this.parent = parent;
     }
 
-    // LAB 1 si LAB 2 - pastram momentan metoda print()
+    // LAB 1 si LAB 2
     public abstract void print();
 
     // LAB 3 - Visitor

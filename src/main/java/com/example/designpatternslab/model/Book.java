@@ -2,11 +2,8 @@
 package com.example.designpatternslab.model;
 
 import com.example.designpatternslab.visitor.Visitor;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Transient;
 
 import java.util.ArrayList;
@@ -15,19 +12,18 @@ import java.util.List;
 @Entity
 public class Book extends Element {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private String title;
     private String author;
 
-    @Transient
+    // LAB 5-6 - Relatie ManyToMany intre Book si Author
+    @ManyToMany
     private List<Author> authors = new ArrayList<>();
 
+    // Pastram momentan continutul cartii in afara bazei de date
     @Transient
     private List<Element> contents = new ArrayList<>();
 
+    // Constructor necesar pentru JPA
     public Book() {
     }
 
@@ -36,18 +32,12 @@ public class Book extends Element {
     }
 
     public Book(Long id, String title, String author) {
-        this.id = id;
+        setId(id);
         this.title = title;
         this.author = author;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // getId() si setId() sunt mostenite din Element
 
     public String getTitle() {
         return title;
@@ -63,6 +53,14 @@ public class Book extends Element {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public List<Author> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(List<Author> authors) {
+        this.authors = authors;
     }
 
     public void addAuthor(Author author) {

@@ -2,12 +2,21 @@
 package com.example.designpatternslab.model;
 
 import com.example.designpatternslab.visitor.Visitor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 
+@Entity
 public class Paragraph extends Element {
 
     private String text;
 
+    // LAB 2 - Strategy Pattern
+    @Transient
     private AlignStrategy alignStrategy;
+
+    // Constructor necesar pentru JPA
+    public Paragraph() {
+    }
 
     public Paragraph(String text) {
         this.text = text;
@@ -27,7 +36,6 @@ public class Paragraph extends Element {
 
     @Override
     public void print() {
-
         if (alignStrategy == null) {
             System.out.println("Paragraph: " + text);
         } else {
