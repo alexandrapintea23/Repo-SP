@@ -2,6 +2,7 @@
 package com.example.designpatternslab.service;
 
 import com.example.designpatternslab.model.Book;
+import com.example.designpatternslab.observer.AllBooksSubject;
 import com.example.designpatternslab.persistence.CrudRepository;
 
 import org.springframework.stereotype.Service;
@@ -13,13 +14,17 @@ import java.util.Optional;
 public class BooksService {
 
     private final CrudRepository<Book, Long> bookRepository;
+    private final AllBooksSubject allBooksSubject;
 
-    // Spring injecteaza implementarea BookRepositoryAdapter
-    public BooksService(CrudRepository<Book, Long> bookRepository) {
+    public BooksService(
+            CrudRepository<Book, Long> bookRepository,
+            AllBooksSubject allBooksSubject
+    ) {
         this.bookRepository = bookRepository;
+        this.allBooksSubject = allBooksSubject;
     }
 
-    // LAB 4 + LAB 5-6: citim titlurile din baza de date
+    // LAB 4 + LAB 5-6 - Citim titlurile din baza de date
     public List<String> getAllBooks() {
         return bookRepository.findAll()
                 .stream()
@@ -44,10 +49,15 @@ public class BooksService {
         return bookRepository.findById(id);
     }
 
-    // Salvam cartea in H2
+    // LAB 7 - Salvam cartea si notificam observatorii
     public String addBook(String title) {
         Book book = new Book(title);
-        bookRepository.save(book);
+
+        // Salvam cartea si obtinem ID-ul generat
+        book = bookRepository.save(book);
+
+        // Observer Pattern - notificam browserul
+        allBooksSubject.add(book);
 
         return "Cartea '" + title + "' a fost adaugata cu succes";
     }

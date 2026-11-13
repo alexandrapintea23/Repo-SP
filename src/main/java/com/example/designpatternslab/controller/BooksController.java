@@ -32,25 +32,19 @@ public class BooksController {
         this.asyncCommandExecutor = asyncCommandExecutor;
     }
 
-    // LAB 4 + LAB 5-6 - Endpoint existent
+    // LAB 4 + LAB 5-6 - Afisam titlurile cartilor
     @GetMapping("/books")
     public List<String> getAllBooks() {
         return booksService.getAllBooks();
     }
 
-    // Endpoint existent - cautare dupa ID
-    @GetMapping("/books/{id}")
-    public String getBookById(@PathVariable Long id) {
-        return booksService.getBookById(id);
-    }
-
-    // LAB 5-6 - Returnam toate cartile ca obiecte JSON
+    // LAB 5-6 - Afisam cartile in format JSON
     @GetMapping("/books/json")
     public List<Book> getAllBooksJson() {
         return booksService.getAllBooksAsObjects();
     }
 
-    // LAB 5-6 - Returnam o carte ca obiect JSON
+    // LAB 5-6 - Afisam o carte in format JSON dupa ID
     @GetMapping("/books/json/{id}")
     public ResponseEntity<Book> getBookJsonById(@PathVariable Long id) {
         return booksService.getBookAsObjectById(id)
@@ -58,19 +52,23 @@ public class BooksController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // LAB 4 - Command Pattern - CREATE
+    // Cautam titlul cartii dupa ID
+    @GetMapping("/books/{id}")
+    public String getBookById(@PathVariable Long id) {
+        return booksService.getBookById(id);
+    }
+
+    // LAB 4 + LAB 7 - Command Pattern + Observer Pattern
     @PostMapping("/books")
     public String createBook(@RequestBody String title) {
         AddBookCommand command = new AddBookCommand(booksService, title);
         return commandExecutor.executeCommand(command);
     }
 
-    // LAB 4 - Command Pattern - ASYNC CREATE
+    // LAB 4 - Adaugare asincrona
     @PostMapping("/books/async")
     public ResponseEntity<String> createBookAsync(@RequestBody String title) {
-
         AddBookCommand command = new AddBookCommand(booksService, title);
-
         String commandId = asyncCommandExecutor.executeAsync(command);
 
         return ResponseEntity
@@ -78,7 +76,7 @@ public class BooksController {
                 .body(commandId);
     }
 
-    // LAB 4 - Command Pattern - UPDATE
+    // LAB 4 - Actualizare carte
     @PutMapping("/books/{id}")
     public String updateBook(
             @PathVariable Long id,
@@ -90,12 +88,10 @@ public class BooksController {
         return commandExecutor.executeCommand(command);
     }
 
-    // LAB 4 - Command Pattern - DELETE
+    // LAB 4 - Stergere carte
     @DeleteMapping("/book/{id}")
     public String deleteBook(@PathVariable Long id) {
-        DeleteBookCommand command =
-                new DeleteBookCommand(booksService, id);
-
+        DeleteBookCommand command = new DeleteBookCommand(booksService, id);
         return commandExecutor.executeCommand(command);
     }
 }
