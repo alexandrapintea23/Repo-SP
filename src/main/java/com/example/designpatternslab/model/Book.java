@@ -2,6 +2,8 @@
 package com.example.designpatternslab.model;
 
 import com.example.designpatternslab.visitor.Visitor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Transient;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Book extends Element {
 
     private String title;
@@ -19,7 +22,7 @@ public class Book extends Element {
     @ManyToMany
     private List<Author> authors = new ArrayList<>();
 
-    // Pastram momentan continutul cartii in afara bazei de date
+    // Continutul cartii este pastrat doar in memorie
     @Transient
     private List<Element> contents = new ArrayList<>();
 
@@ -65,6 +68,12 @@ public class Book extends Element {
 
     public void addAuthor(Author author) {
         authors.add(author);
+    }
+
+    // LAB 5-6 - Nu serializam continutul temporar in JSON
+    @JsonIgnore
+    public List<Element> getContents() {
+        return contents;
     }
 
     public void addContent(Element element) {

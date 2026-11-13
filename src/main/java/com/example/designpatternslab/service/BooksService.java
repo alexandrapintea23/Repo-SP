@@ -2,23 +2,24 @@
 package com.example.designpatternslab.service;
 
 import com.example.designpatternslab.model.Book;
-import com.example.designpatternslab.repository.BookRepository;
+import com.example.designpatternslab.persistence.CrudRepository;
 
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BooksService {
 
-    private final BookRepository bookRepository;
+    private final CrudRepository<Book, Long> bookRepository;
 
-    // Spring injecteaza automat repository-ul
-    public BooksService(BookRepository bookRepository) {
+    // Spring injecteaza implementarea BookRepositoryAdapter
+    public BooksService(CrudRepository<Book, Long> bookRepository) {
         this.bookRepository = bookRepository;
     }
 
-    // LAB 4 + LAB 5-6: citim cartile din baza de date
+    // LAB 4 + LAB 5-6: citim titlurile din baza de date
     public List<String> getAllBooks() {
         return bookRepository.findAll()
                 .stream()
@@ -26,11 +27,21 @@ public class BooksService {
                 .toList();
     }
 
-    // Cautam cartea dupa ID-ul real din baza de date
+    // Cautam titlul cartii dupa ID
     public String getBookById(Long id) {
         return bookRepository.findById(id)
                 .map(Book::getTitle)
                 .orElse("Cartea nu a fost gasita");
+    }
+
+    // LAB 5-6 - Returnam obiectele Book pentru JSON
+    public List<Book> getAllBooksAsObjects() {
+        return bookRepository.findAll();
+    }
+
+    // LAB 5-6 - Returnam o carte completa dupa ID
+    public Optional<Book> getBookAsObjectById(Long id) {
+        return bookRepository.findById(id);
     }
 
     // Salvam cartea in H2
@@ -65,4 +76,3 @@ public class BooksService {
         return "Cartea cu ID-ul " + id + " a fost stearsa cu succes";
     }
 }
-

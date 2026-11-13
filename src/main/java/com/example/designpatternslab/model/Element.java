@@ -2,6 +2,8 @@
 package com.example.designpatternslab.model;
 
 import com.example.designpatternslab.visitor.Visitor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +34,8 @@ public abstract class Element {
         this.id = id;
     }
 
+    // LAB 5-6 - Evitam referintele circulare in JSON
+    @JsonIgnore
     public Element getParent() {
         return parent;
     }

@@ -1,3 +1,4 @@
+
 package com.example.designpatternslab.controller;
 
 import com.example.designpatternslab.command.AddBookCommand;
@@ -5,6 +6,7 @@ import com.example.designpatternslab.command.UpdateBookCommand;
 import com.example.designpatternslab.command.DeleteBookCommand;
 import com.example.designpatternslab.command.BookCommandExecutor;
 import com.example.designpatternslab.command.AsyncCommandExecutor;
+import com.example.designpatternslab.model.Book;
 import com.example.designpatternslab.service.BooksService;
 
 import org.springframework.http.HttpStatus;
@@ -30,22 +32,40 @@ public class BooksController {
         this.asyncCommandExecutor = asyncCommandExecutor;
     }
 
+    // LAB 4 + LAB 5-6 - Endpoint existent
     @GetMapping("/books")
     public List<String> getAllBooks() {
         return booksService.getAllBooks();
     }
 
+    // Endpoint existent - cautare dupa ID
     @GetMapping("/books/{id}")
     public String getBookById(@PathVariable Long id) {
         return booksService.getBookById(id);
     }
 
+    // LAB 5-6 - Returnam toate cartile ca obiecte JSON
+    @GetMapping("/books/json")
+    public List<Book> getAllBooksJson() {
+        return booksService.getAllBooksAsObjects();
+    }
+
+    // LAB 5-6 - Returnam o carte ca obiect JSON
+    @GetMapping("/books/json/{id}")
+    public ResponseEntity<Book> getBookJsonById(@PathVariable Long id) {
+        return booksService.getBookAsObjectById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // LAB 4 - Command Pattern - CREATE
     @PostMapping("/books")
     public String createBook(@RequestBody String title) {
         AddBookCommand command = new AddBookCommand(booksService, title);
         return commandExecutor.executeCommand(command);
     }
 
+    // LAB 4 - Command Pattern - ASYNC CREATE
     @PostMapping("/books/async")
     public ResponseEntity<String> createBookAsync(@RequestBody String title) {
 
@@ -58,6 +78,7 @@ public class BooksController {
                 .body(commandId);
     }
 
+    // LAB 4 - Command Pattern - UPDATE
     @PutMapping("/books/{id}")
     public String updateBook(
             @PathVariable Long id,
@@ -69,9 +90,12 @@ public class BooksController {
         return commandExecutor.executeCommand(command);
     }
 
+    // LAB 4 - Command Pattern - DELETE
     @DeleteMapping("/book/{id}")
     public String deleteBook(@PathVariable Long id) {
-        DeleteBookCommand command = new DeleteBookCommand(booksService, id);
+        DeleteBookCommand command =
+                new DeleteBookCommand(booksService, id);
+
         return commandExecutor.executeCommand(command);
     }
 }
